@@ -18,7 +18,7 @@ public class FlightRead {
 			FileWriter fileWriter = new FileWriter(fileWrite);
 			BufferedWriter bufferedWriter= new BufferedWriter(fileWriter);
 			// The name of the file to opened to be read
-			for (int i=0;i<1;i++){
+			for (int i=0;i<files.length;i++){
 				String fileName = files[i];
 				// This will reference one line at a time
 				String line = null;
@@ -51,13 +51,13 @@ public class FlightRead {
 						for (int z=0;z<lengthRemain;z++){
 							dataclean[z]=data[toDeleteIndex[z]];
 						}
-						System.out.println(Arrays.toString(dataclean));
-						bufferedWriter.write(Arrays.toString(dataclean));
+						String datacleanstring = Arrays.toString(dataclean);
+						datacleanstring=datacleanstring.replaceAll("\\[","").replaceAll("\\]","");
+//						System.out.println(Arrays.toString(dataclean));
+						bufferedWriter.write(datacleanstring);
+						//bufferedWriter.write(Arrays.toString(dataclean));
 						bufferedWriter.newLine();
 					}
-					// Determine the columns of interest here
-					//           	
-					//}
 					// Always close files.
 					bufferedReader.close();			
 			}
@@ -83,7 +83,6 @@ public class FlightRead {
 		// Or we could just do this:
 		// 	            // ex.printStackTrace();
 		// 	            	        }
-		//
 } 
 }
 }
