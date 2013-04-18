@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.io.*;
 public class FlightRead {
@@ -13,9 +14,7 @@ public class FlightRead {
 		}
 		// The name of the file to open.
 		for (int i=0;i<1;i++){
-			//		String fileName = "test.csv";
 			String fileName = files[i];
-			//		String fileName = "On_Time_On_Time_Performance_2012_1.csv";
 			// This will reference one line at a time
 			String line = null;
 			try {
@@ -25,50 +24,48 @@ public class FlightRead {
 				// Always wrap FileReader in BufferedReader.
 				BufferedReader bufferedReader = 
 					new BufferedReader(fileReader);
+				// Extract the header to determine which coluns to keep
 				line = bufferedReader.readLine();
 				String[] fields = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
-				System.out.println("----------------------");
-				for (String f : toDelete) {
-					System.out.println(f);
-				}
-				System.out.println("----------------------");
-				for (String f : fields) {
-					System.out.println(f);
-				}
 				// Create array of the indices of where the columns we want
 				int lengthRemain = toDelete.length;
 				int lengthOriginal = fields.length;
 				int [] toDeleteIndex = new int[lengthRemain];
 				int j=0;
-				System.out.println("----------------------");
 				for (int z=0;z<lengthOriginal;z++){
 					if (hashtable.get(fields[z])!=null){
 						toDeleteIndex[j]=z;
 						j++;
 					}
 				}
-for (int z =0; z<lengthRemain; z++)System.out.println(fields[toDeleteIndex[z]]);
-				//while((line = bufferedReader.readLine()) != null) {
-
-
+				// Now with the columns we know we want to delete, we run through each line to get the tokens we want, put them into a comma delimited line, and then append it to the text file
+				while((line = bufferedReader.readLine()) != null) {
+					String[] data = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+					// Extract only the tokens that we want
+					String[] dataclean = new String[lengthRemain];
+					for (int z=0;z<lengthRemain;z++){
+						dataclean[z]=data[toDeleteIndex[z]];
+					}
+					System.out.println(Arrays.toString(dataclean));
+				}
 				// Determine the columns of interest here
 				//           	
 				//}
 				// Always close files.
 				bufferedReader.close();			
-			}
-			catch(FileNotFoundException ex) {
-				System.out.println(
-						"Unable to open file '" + 
-						fileName + "'");				
-			}
-			catch(IOException ex) {
-				System.out.println(
-						"Error reading file '" 
-						+ fileName + "'");					
-				// Or we could just do this: 
-				// ex.printStackTrace();
-			}
 		}
-	} 
+		catch(FileNotFoundException ex) {
+			System.out.println(
+					"Unable to open file '" + 
+					fileName + "'");				
+		}
+		catch(IOException ex) {
+			System.out.println(
+					"Error reading file '" 
+					+ fileName + "'");					
+			// Or we could just do this: 
+			// ex.printStackTrace();
+		}
+	}
+} 
 }
