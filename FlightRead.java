@@ -1,11 +1,13 @@
+import java.io.File;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.io.*;
 public class FlightRead {
 	public static void main(String[] args) {	
-		//String []files = {"test.csv", "test2.csv","On_Time_On_Time_Performance_2012_1.csv"};
-		String []files = {"test.csv", "test2.csv"};
+		// This first command is to open the directory which is called "data" for me. I will loop through each of the individual files in the directory later to write to a csv called "write.csv"
+		File dir = new File("data");
 		String fileWrite = "write.csv";
+		// This is the list of columns that we want to keep
 		String [] toDelete = {"\"Year\"","\"Quarter\"","\"Month\"","\"DayofMonth\"","\"DayOfWeek\"","\"UniqueCarrier\"","\"Origin\"","\"OriginCityName\"","\"OriginState\"","\"Dest\"","\"DestCityName\"","\"DestState\"","\"CRSDepTime\"","\"DepTime\"","\"DepDelay\"","\"DepDelayMinutes\"","\"DepDel15\"","\"DepartureDelayGroups\"","\"TaxiOut\"","\"TaxiIn\"","\"ArrDelay\"","\"ArrDelayMinutes\"","\"ArrDel15\"","\"Cancelled\"","\"ActualElapsedTime\"","\"AirTime\"","\"Distance\""};
 		// Create Hash table with the toDelete table
 		Hashtable<String,Integer> hashtable = new Hashtable<String,Integer>();
@@ -18,8 +20,9 @@ public class FlightRead {
 			FileWriter fileWriter = new FileWriter(fileWrite);
 			BufferedWriter bufferedWriter= new BufferedWriter(fileWriter);
 			// The name of the file to opened to be read
-			for (int i=0;i<files.length;i++){
-				String fileName = files[i];
+			//			for (int i=0;i<files.length;i++){
+			for (File fileName : dir.listFiles()){
+				//	String fileName = files[i];
 				// This will reference one line at a time
 				String line = null;
 				try {
@@ -31,6 +34,7 @@ public class FlightRead {
 						new BufferedReader(fileReader);
 					// Extract the header to determine which coluns to keep
 					line = bufferedReader.readLine();
+					// Separate the one line of headers into individual tokens
 					String[] fields = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
 					// Create array of the indices of where the columns we want
 					int lengthRemain = toDelete.length;
@@ -51,38 +55,37 @@ public class FlightRead {
 						for (int z=0;z<lengthRemain;z++){
 							dataclean[z]=data[toDeleteIndex[z]];
 						}
+						// Sort of a 'hack', this is to concatenate all the tokens that we want with a ",". However there are square brackets at the beginning and end so the next command is to remove the brackets
 						String datacleanstring = Arrays.toString(dataclean);
 						datacleanstring=datacleanstring.replaceAll("\\[","").replaceAll("\\]","");
-//						System.out.println(Arrays.toString(dataclean));
 						bufferedWriter.write(datacleanstring);
-						//bufferedWriter.write(Arrays.toString(dataclean));
 						bufferedWriter.newLine();
 					}
 					// Always close files.
 					bufferedReader.close();			
+				}
+				catch(FileNotFoundException ex) {
+					System.out.println(
+							"Unable to open file '" + 
+							fileName + "'");				
+				}
+				catch(IOException ex) {
+					System.out.println(
+							"Error reading file '" 
+							+ fileName + "'");					
+					// Or we could just do this: 
+					// ex.printStackTrace();
+				}
 			}
-			catch(FileNotFoundException ex) {
-				System.out.println(
-						"Unable to open file '" + 
-						fileName + "'");				
-			}
-			catch(IOException ex) {
-				System.out.println(
-						"Error reading file '" 
-						+ fileName + "'");					
-				// Or we could just do this: 
-				// ex.printStackTrace();
-			}
+			bufferedWriter.close();
 		}
-		bufferedWriter.close();
+		catch(IOException ex) {
+			System.out.println(
+					"Error writing to file '"
+					+ fileWrite + "'");
+			// Or we could just do this:
+			// 	            // ex.printStackTrace();
+			// 	            	        }
+		} 
 	}
-	catch(IOException ex) {
-		System.out.println(
-				"Error writing to file '"
-				+ fileWrite + "'");
-		// Or we could just do this:
-		// 	            // ex.printStackTrace();
-		// 	            	        }
-} 
-}
 }
